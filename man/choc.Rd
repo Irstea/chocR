@@ -37,6 +37,6 @@ meansY <- -0.5*tvar/40 #trend on 2nd variable
 sigma <- matrix(c(1,.1,.1,1),2,2) #covariance matrix
 values <- t(apply(cbind(meansX,meansY),1,function(mu) mvrnorm(1,mu,sigma))) #generate the values
 H <- Hpi #choose the default bandwith
-res <- choc(values,H,tvar)
+res_choc <- choc(values,H,tvar)
 
 }

@@ -16,21 +16,10 @@
 #' @importFrom stats quantile
 #' @importFrom Kendall MannKendall
 #' @examples
-#' #generate artificial data set
-#' #two time series measured on 40 time steps with 365 observations per time step.
-#' #the two series follow a multinormal time series with a tend on means and a constant
-#' #covariance matrix
-#' library(MASS)
-#' library(ks)
-#' tvar <- rep(1:40,times=100) #times steps
-#' meansX <- tvar/40 #trend on 1st variable
-#' meansY <- -0.5*tvar/40 #trend on 2nd variable
-#' sigma <- matrix(c(1,.1,.1,1),2,2) #covariance matrix
-#' values <- t(apply(cbind(meansX,meansY),1,function(mu) mvrnorm(1,mu,sigma))) #generate the values
-#' H<-Hpi #choose the default bandwith
-#' res <- choc(values,H,tvar)
+#' #retrieve results of a choc function
+#' data(res_choc)
 #' #here we put a low number of replicates to limit computation time
-#' res_confid <- estimate_confidence(res,"perm",0.95,50)
+#' res_confid <- estimate_confidence(res_choc,"perm",0.95,50)
 #'
 #' @export
 

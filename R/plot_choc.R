@@ -15,21 +15,8 @@
 #' @importFrom sp point.in.polygon
 #' @importFrom ggplot2 scale_fill_manual
 #' @examples
-#' #generate artificial data set
-#' #two time series measured on 40 time steps with 365 observations per time step.
-#' #the two series follow a multinormal time series with a tend on means and a constant
-#' #covariance matrix
-#' library(MASS)
-#' library(ks)
-#' tvar <- rep(1:40,times=100) #times steps
-#' meansX <- tvar/40 #trend on 1st variable
-#' meansY <- -0.5*tvar/40 #trend on 2nd variable
-#' sigma <- matrix(c(1,.1,.1,1),2,2) #covariance matrix
-#' values <- t(apply(cbind(meansX,meansY),1,function(mu) mvrnorm(1,mu,sigma))) #generate the values
-#' H<-Hpi #choose the default bandwith
-#' res <- choc(values,H,tvar)
-#' #here we put a low number of replicates to limit computation time
-#' res_confid <- estimate_confidence(res,"perm",0.95,50)
+#' #example of results provided by estimate_confidence
+#' data(res_confid)
 #' g<-plot_choc(res_confid)
 #' print(g)
 #'

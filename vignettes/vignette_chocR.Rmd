@@ -13,6 +13,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(chocR)
+data(res_choc)
+data(res_confid)
 ```
 
 #Introduction
@@ -20,7 +22,7 @@ This packages aims at carrying out a change of occurence analysis on multivariat
 
 Here is an example on simulated data set:
 
-```{r }
+```{r eval=FALSE}
 library(MASS)
 library(ks)
 tvar <- rep(1:40,times=100) #times steps
@@ -29,18 +31,22 @@ meansY <- -0.5*tvar/40 #trend on 2nd variable
 sigma <- matrix(c(1,.1,.1,1),2,2) #covariance matrix
 values <- t(apply(cbind(meansX,meansY),1,function(mu) mvrnorm(1,mu,sigma))) #generate the values
 H <- Hpi #choose the default bandwith
-res <- choc(values,H,tvar)
-head(res$grid)
+res_choc <- choc(values,H,tvar)
+```
+```{r}
+head(res_choc$grid)
 ```
 
 The first lines aims at generating an artificial dataset, then a method is chosen to select the bandwith of the kernel estimator. The choc analysis is then carried out. res$grid provides for a set of <X,Y> points the corresponding Kendall rank correlation coefficient to indicate whether the temporal trend is positive or negative.
 
-We also provide a method to assess whether these trends are significant or not. We provide to different methods. The method "kern" is based on simulations of surrogate data. If we assumed that there is not trend in the data, we can fit a kernel on the whole data-set and use this kernel to simulate data having the same structure than the original data set (same number of observations per period), and we can compute corresponding Kendall coefficient on the surrogate data sets. By doing this, we generate distribution of Kendall coefficient under H0 and therefore, we can assess the significance of our the coefficient on the observed data set. We should be aware that, by doing this, we totally ignore a potential autocorrelation (such as seasonality) within perdiod.
+We also provide a method to assess whether these trends are significant or not. We provide to different methods. The method "kern" is based on simulations of surrogate data. If we assumed that there is not trend in the data, we can fit a kernel on the whole data-set and use this kernel to simulate data having the same structure than the original data set (same number of observations per period), and we can compute corresponding Kendall coefficient on the surrogate data sets. By doing this, we generate distribution of Kendall coefficient under H0 and therefore, we can assess the significance of our the coefficient on the observed data set. We should be aware that, by doing this, we totally ignore a potential autocorrelation (such as seasonality) within period.
 To overcome this limitation, we provide a second method "perm". The method is based on permutation: we permutate periods leading to vectors such as {D20,D12,Dp,...D1,D40} and estimate corresponding Kendall coefficient. Once again, this provides a distribution of Kendall coefficient under H0 (no trend so that periods can be permuted).
 
 
-```{r }
-res_confid <- estimate_confidence(res,"perm",0.95,5000)
+```{r eval=FALSE}
+res_confid <- estimate_confidence(res,"perm",0.95,1000) #be aware that this make take several hours
+```
+```{r}
 g<-plot_choc(res_confid)
 print(g)
 ```

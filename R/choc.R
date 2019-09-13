@@ -24,7 +24,7 @@
 #' sigma <- matrix(c(1,.1,.1,1),2,2) #covariance matrix
 #' values <- t(apply(cbind(meansX,meansY),1,function(mu) mvrnorm(1,mu,sigma))) #generate the values
 #' H <- Hpi #choose the default bandwith
-#' res <- choc(values,H,tvar)
+#' res_choc <- choc(values,H,tvar)
 #'
 #' @export
 choc <- function(mydata, H, timevar, resolution = 100) {
