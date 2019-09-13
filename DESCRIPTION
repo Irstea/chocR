@@ -1,0 +1,26 @@
+Package: chocR
+Title: Exploring the temporal CHange of OCcurence of events in multivariate time series
+Version: 0.0.0.9000
+Authors@R: c(person("Hilaire","Drouineau",email="hilaire.drouineau@irstea.fr",role=c("aut","cre")),
+    person("Elorri","Arevalo",role=c("aut")),
+    person("Anthony","Maire",email="anthony.maire@edf.fr",role=c("aut")),
+    person("Stéphane","Tétard",email="stephane.tetard@edf.fr",role=c("aut")),
+    person("Géraldine","Lassalle",email="geraldine.lassalle@irstea.fr",role=c("aut")))
+Description: Choc analysis aims at detenting variations of occurences (increase or decrease) of events in multivariate time series.
+Depends: R (>= 3.5.0)
+License: BSD_3_clause + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    ks,
+    Kendall,
+    ggplot2,
+    stats,
+    grDevices,
+    sp
+Suggests: 
+    knitr,
+    rmarkdown,
+    MASS
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
