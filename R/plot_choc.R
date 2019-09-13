@@ -28,6 +28,7 @@ plot_choc<-function(mychoc,ivar=c(1,2)){
       x$x))
   mygrid<-mychoc$grid
   if (ncol(overall_data)>2){ ###if we have more than 2 dimensions, we plot the diagram at the quantile of other dimensions
+    lev <- NA
     apply(overall_data,2,function(x) {
       lev<-unique(x)
       lev[round(length(lev)/2)]
@@ -43,11 +44,11 @@ plot_choc<-function(mychoc,ivar=c(1,2)){
   mychull <- c(mychull,mychull[1])
 
   mygrid$inhull <- point.in.polygon(mygrid[,ivar[1]],mygrid[,ivar[2]],pol.x=overall_data[mychull,1],pol.y=overall_data[mychull,2])
-  mygrid$color<-ifelse(mygrid$tau>0,ifelse(mygrid$tau>mygrid$bsup,1,2),ifelse(mygrid$tau<mygrid$binf,4,3))
-  mygrid$color<-ifelse(mygrid$inhull,mygrid$color,0)
-  mygrid$color=as.factor(mygrid$color)
+  mygrid$icolor<-ifelse(mygrid$tau>0,ifelse(mygrid$tau>mygrid$bsup,1,2),ifelse(mygrid$tau<mygrid$binf,4,3))
+  mygrid$icolor<-ifelse(mygrid$inhull,mygrid$icolor,0)
+  mygrid$icolor=as.factor(mygrid$icolor)
   ggplot(mygrid,aes(x=mygrid[,ivar[1]],y=mygrid[,ivar[2]]))+
-    geom_raster(aes(fill=color))+
+    geom_raster(aes(fill=icolor))+
     scale_fill_manual(values=c("white","green","palegreen1","pink1","red"),guide=FALSE)+
     xlab(names(overall_data[,ivar[1]]))+
     ylab(names(overall_data[,ivar[2]]))
