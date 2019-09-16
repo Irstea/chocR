@@ -1,14 +1,17 @@
+#' estimate_confidence
 #' estimate confidence intervals for choc analysis
-#' Two methods are available: perm permutates the kernell per time step and estimates Kendall tau on permutations.
-#' kern fits a kernell on the whole dataset (assuming that there is not time trend) and uses this overall kernell to
-#' generate surrogate data sets on which kendall tau are estimated. Permutations is a good solution when there is seasonnality
-#' within time step to preserve internal seasonality, however, it requires more time steps. kern is a good solution when there
-#' is no seasonnality within time step or when the number of observations per time step is important enough.
 #'
 #' @param mychoc a list as returned by \link{choc}
 #' @param method either "perm" (default) or "kern", see details
 #' @param conf size of the confidence interval
 #' @param nb_replicates number of replicates used to assess confidence intervals
+#'
+#' @section Details:
+#' Two methods are available: perm permutates the kernell per time step and estimates Kendall tau on permutations.
+#' kern fits a kernell on the whole dataset (assuming that there is not time trend) and uses this overall kernell to
+#' generate surrogate data sets on which kendall tau are estimated. Permutations is a good solution when there is seasonnality
+#' within time step to preserve internal seasonality, however, it requires more time steps. kern is a good solution when there
+#' is no seasonnality within time step or when the number of observations per time step is important enough.
 #'
 #' @return an updated version of mychoc with two columns added to mychoc$grid which corresponds to the bounds of the confidence interval
 #' @importFrom ks kde

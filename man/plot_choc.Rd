@@ -2,9 +2,8 @@
 % Please edit documentation in R/plot_choc.R
 \name{plot_choc}
 \alias{plot_choc}
-\title{Plot the result of choc analysis
-red means that there is a significant decrease of occurence of the association, pale red stands for non significant trend
-pale green for non significant positive trend and green for significant positive trend}
+\title{plot_choc
+Plot the result of choc analysis}
 \usage{
 plot_choc(mychoc, ivar = c(1, 2))
 }
@@ -17,10 +16,15 @@ plot_choc(mychoc, ivar = c(1, 2))
 a ggplot object
 }
 \description{
+plot_choc
 Plot the result of choc analysis
+}
+\section{Details}{
+
 red means that there is a significant decrease of occurence of the association, pale red stands for non significant trend
 pale green for non significant positive trend and green for significant positive trend
 }
+
 \examples{
 #example of results provided by estimate_confidence
 data(res_confid)

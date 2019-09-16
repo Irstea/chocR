@@ -1,3 +1,4 @@
+#' choc
 #' carry out a choc analysis on a multivariate time series
 #'
 #' @param mydata a data frame or matrix with one column per time series and one row per observation (event). Marginal distributions are assumed to follow a normal distribution

@@ -2,7 +2,8 @@
 % Please edit documentation in R/choc.R
 \name{choc}
 \alias{choc}
-\title{carry out a choc analysis on a multivariate time series}
+\title{choc
+carry out a choc analysis on a multivariate time series}
 \usage{
 choc(mydata, H, timevar, resolution = 100)
 }
@@ -22,6 +23,7 @@ a list with two elements: \enumerate{
 }
 }
 \description{
+choc
 carry out a choc analysis on a multivariate time series
 }
 \examples{

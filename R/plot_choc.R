@@ -1,9 +1,12 @@
+#' plot_choc
 #' Plot the result of choc analysis
-#' red means that there is a significant decrease of occurence of the association, pale red stands for non significant trend
-#' pale green for non significant positive trend and green for significant positive trend
 #'
 #' @param mychoc a list returned by \code{\link{estimate_confidence}}
 #' @param ivar the two variables that should be plotted
+#'
+#' @section Details:
+#' red means that there is a significant decrease of occurence of the association, pale red stands for non significant trend
+#' pale green for non significant positive trend and green for significant positive trend
 #'
 #' @return a ggplot object
 #' @importFrom ggplot2 ggplot
