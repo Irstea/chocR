@@ -57,7 +57,7 @@ plot_choc <- function(mychoc, ivar = c(1, 2)) {
   mygrid$icolor <- ifelse(mygrid$inhull, mygrid$icolor, 0)
   mygrid$icolor <- as.factor(mygrid$icolor)
   ggplot(mygrid, aes(x = mygrid[, ivar[1]], y = mygrid[, ivar[2]])) +
-    geom_raster(aes(fill = mychoc$icolor)) +
+    geom_raster(aes(fill = mygrid$icolor)) +
     scale_fill_manual(
       values = c("white", "green", "palegreen1", "pink1", "red"),
       guide = FALSE
