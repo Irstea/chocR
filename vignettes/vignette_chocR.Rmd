@@ -10,7 +10,9 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width=16/2.54,
+  fig.height=10/2.54
 )
 library(chocR)
 data(res_choc)
