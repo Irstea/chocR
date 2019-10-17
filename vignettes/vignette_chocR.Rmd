@@ -53,6 +53,6 @@ g<-plot_choc(res_confid)
 print(g)
 ```
 
-In this example, we used a permutation method with 5000 replicates to estimate the significance of Kendall coefficients. A function is then provided to plot results. Here we illustrate a choc analysis in two dimensions, but it can be extended to more dimensions.
+In this example, we used a permutation method with 1000 replicates to estimate the significance of Kendall coefficients. A function is then provided to plot results. Here we illustrate a choc analysis in two dimensions, but it can be extended to more dimensions.
 
 We saw on the plot that the increasing trend in X and the declining trend in Y leads to a rarefaction of events with simultanous high Y and low X and, conversely, a combination of high X and low Y tend become more frequent (regarding our example on river discharge and temperature, this would correspond to an increase of drought period).

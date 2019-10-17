@@ -6,7 +6,7 @@
 estimate confidence intervals for choc analysis}
 \usage{
 estimate_confidence(mychoc, method = "perm", conf = 0.95,
-  nb_replicates = 500)
+  nb_replicates = 500, ncores = 1)
 }
 \arguments{
 \item{mychoc}{a list as returned by \link{choc}}
@@ -16,6 +16,8 @@ estimate_confidence(mychoc, method = "perm", conf = 0.95,
 \item{conf}{size of the confidence interval}
 
 \item{nb_replicates}{number of replicates used to assess confidence intervals}
+
+\item{ncores}{Number of cores used. The parallelization will take place only if OpenMP is supported (default 1)}
 }
 \value{
 an updated version of mychoc with two columns added to mychoc$grid which corresponds to the bounds of the confidence interval

@@ -27,8 +27,7 @@
 
 plot_choc <- function(mychoc, ivar = c(1, 2)) {
   overall_data <-
-    do.call("rbind", lapply(mychoc$kernels, function(x)
-      x$x))
+    do.call("rbind", mychoc$list_data)
   mygrid <- mychoc$grid
   if (ncol(overall_data) > 2) {
     ###if we have more than 2 dimensions, we plot the diagram at the quantile of other dimensions

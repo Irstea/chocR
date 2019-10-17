@@ -5,12 +5,14 @@
 #' @param H either a function from library ks to estimate a bandwith matrix, or directly a bandwith matrix. Exemples of function \code{\link[ks]{Hpi}} or \code{\link[ks]{Hscv}}...
 #' @param timevar a vector specifying the time step for each observation. Several observations per time step are required. Observations of a same time step are assumed to be replicates.
 #' @param resolution grid resolution on which the densities of probability will be computed. The resolution does not affect the result: high resolution increases the resolution of final diagrams but increases computation time and memory usage. The number of observations per time step should be roughly similar
+#' @param ncores Number of cores used. The parallelization will take place only if OpenMP is supported.
 #'
-#' @return a list with two elements: \enumerate{
-#' \item the list of fitted kernels per time step
+#' @return a list with 3 elements: \enumerate{
+#' \item the list of data per time step
 #' \item a dafaframe with one row per time series and a column tau that gives the tau of Kendall trend test
+#' \item the cholesky decomposition of H
 #' }
-#' @importFrom ks kde
+#' @importFrom mvnfast dmvn
 #' @importFrom Kendall MannKendall
 #' @examples
 #' #generate artificial data set
@@ -18,7 +20,7 @@
 #' #the two series follow a multinormal time series with a tend on means and a constant
 #' #covariance matrix
 #' library(MASS)
-#' library(ks)
+#' require(ks)
 #' tvar <- rep(1:40,times=100) #times steps
 #' meansX <-tvar/40 #trend on 1st variable
 #' meansY <- -0.5*tvar/40 #trend on 2nd variable
@@ -28,18 +30,18 @@
 #' res_choc <- choc(values,H,tvar)
 #'
 #' @export
-choc <- function(mydata, H, timevar, resolution = 100) {
+choc <- function(mydata, H, timevar, resolution = 100,ncores=1) {
   if (class(H) == "function") {
     H <- H(mydata)
   } else if (class(H) != "matrix") {
     stop ("H is not valid, should be a function or a matrix")
   }
-  #fit kernels per time step
-  list_kernel <- lapply(unique(timevar), function(y) {
+  cholH <- chol(H)
+  #create a list of data per timestep
+  list_data <- lapply(unique(timevar), function(y) {
     sub_mydata <- subset(mydata, timevar == y)
-    kernel_data <- kde(sub_mydata, H = H)
   })
-  names(list_kernel) <- unique(timevar)
+  names(list_data) <- unique(timevar)
 
   #build a grid on which densities of probability will be computed
   grid <-
@@ -49,12 +51,15 @@ choc <- function(mydata, H, timevar, resolution = 100) {
 
   #compute density for each point of the grid and each time step
   densprob <-
-    sapply(list_kernel, function(kern)
-      kde(kern$x, H = kern$H, eval.points = grid)$estimate)
+    sapply(list_data, function(sdata){
+      rowMeans(apply(sdata,1,function(points){
+        dmvn(as.matrix(grid),points,sigma=cholH,isChol=TRUE,ncores=ncores)
+      }))
+    })
 
   #compute tau kendall
   grid$tau <- apply(densprob, 1, function(x)
     MannKendall(x)$tau)
 
-  return(list(kernels=list_kernel,grid=grid))
+  return(list(list_data=list_data,grid=grid,cholH=cholH))
 }

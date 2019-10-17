@@ -5,6 +5,7 @@
 #' @param method either "perm" (default) or "kern", see details
 #' @param conf size of the confidence interval
 #' @param nb_replicates number of replicates used to assess confidence intervals
+#' @param ncores Number of cores used. The parallelization will take place only if OpenMP is supported (default 1)
 #'
 #' @section Details:
 #' Two methods are available: perm permutates the kernell per time step and estimates Kendall tau on permutations.
@@ -14,8 +15,9 @@
 #' is no seasonnality within time step or when the number of observations per time step is important enough.
 #'
 #' @return an updated version of mychoc with two columns added to mychoc$grid which corresponds to the bounds of the confidence interval
-#' @importFrom ks kde
-#' @importFrom ks rkde
+#' @importFrom mvnfast dmvn
+#' @importFrom mvnfast rmvn
+#' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom stats quantile
 #' @importFrom Kendall MannKendall
 #' @examples
@@ -31,55 +33,60 @@ estimate_confidence <-
   function(mychoc,
            method = "perm",
            conf = 0.95,
-           nb_replicates = 500) {
+           nb_replicates = 500,
+           ncores=1) {
     thresholds <- NA
     grid_points <- mychoc$grid[, -ncol(mychoc$grid)]
-    H <- mychoc$kernels[[1]]$H
+    cholH <- mychoc$cholH
+    pb <- txtProgressBar(min = 0, max = nb_replicates, style = 3)
     if (method == "kern") {
       overall_data <-
-        do.call("rbind", lapply(mychoc$kernels, function(x)
-          x$x))
-      overall_kernel <- kde(overall_data, H = H)
-      nb_time_step <- length(mychoc$kernels)
+        do.call("rbind", mychoc$list_data)
+      nb_time_step <- length(mychoc$list_data)
       nb_obs <- nrow(overall_data)
-      thresholds <- apply(replicate(nb_replicates, {
+      center <- rep(0,ncol(overall_data))
+      thresholds <- apply(sapply(1:nb_replicates, function(r) {
         #sample nb_obs observations from overall_kernell
-        mock_data <- data.frame(rkde(nb_obs, overall_kernel))
+        mus <- sample(1:nb_obs,nb_obs,replace=TRUE)
+        mock_data <- overall_data[mus,]+rmvn(nb_obs,center,cholH,isChol=TRUE,ncores=ncores)
         mock_tvar <-
-          as.vector(sapply(1:length(mychoc$kernels), function(i)
+          as.vector(sapply(1:length(mychoc$list_data), function(i)
             rep(i, nrow(
-              mychoc$kernels[[i]]$x
+              mychoc$list_data[[i]]
             ))))
-        mock_kernels <- lapply(unique(mock_tvar), function(y) {
+        mock_list_data <- lapply(unique(mock_tvar), function(y) {
           sub_mock_data <- subset(mock_data, mock_tvar == y)
-          kde(sub_mock_data, H = H)
         })
         mock_dens <-
-          sapply(mock_kernels, function(kern)
-            kde(
-              x = kern$x,
-              H = kern$H,
-              eval.points = grid_points
-            )$estimate)
+          sapply(mock_list_data, function(sdata){
+            rowMeans(apply(sdata,1,function(points){
+              dmvn(as.matrix(grid_points),points,sigma=cholH,isChol=TRUE,ncores=ncores)
+            }))
+        })
+
+
         tau <- apply(mock_dens, 1, function(x)
           MannKendall(x)$tau)
+        setTxtProgressBar(pb,r)
+        tau
       }),
       1,
       quantile,
       probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
     } else if (method == "perm") {
-      thresholds <- apply(replicate(nb_replicates, {
-        perm_kernels <-
-          mychoc$kernels[sample.int(length(mychoc$kernels), replace = TRUE)]
+      thresholds <- apply(sapply(1:nb_replicates, function(r){
+        perm_list_data <-
+          mychoc$list_data[sample.int(length(mychoc$list_data), replace = TRUE)]
         perm_dens <-
-          sapply(perm_kernels, function(kern)
-            kde(
-              x = kern$x,
-              H = H,
-              eval.points = grid_points
-            )$estimate)
+          sapply(perm_list_data, function(sdata){
+            rowMeans(apply(sdata,1,function(points){
+              dmvn(as.matrix(grid_points),points,sigma=cholH,isChol=TRUE,ncores=ncores)
+            }))
+          })
         perm_tau <- apply(perm_dens, 1, function(x)
           MannKendall(x)$tau)
+        setTxtProgressBar(pb,r)
+        perm_tau
       }),
       1,
       quantile,

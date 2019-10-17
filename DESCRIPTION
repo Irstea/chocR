@@ -12,13 +12,15 @@ License: BSD_3_clause + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    ks,
     Kendall,
     ggplot2,
     stats,
     grDevices,
-    sp
+    sp,
+    mvnfast,
+    utils
 Suggests: 
+    ks,
     knitr,
     rmarkdown,
     MASS

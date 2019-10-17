@@ -5,7 +5,7 @@
 \title{choc
 carry out a choc analysis on a multivariate time series}
 \usage{
-choc(mydata, H, timevar, resolution = 100)
+choc(mydata, H, timevar, resolution = 100, ncores = 1)
 }
 \arguments{
 \item{mydata}{a data frame or matrix with one column per time series and one row per observation (event). Marginal distributions are assumed to follow a normal distribution}
@@ -15,11 +15,14 @@ choc(mydata, H, timevar, resolution = 100)
 \item{timevar}{a vector specifying the time step for each observation. Several observations per time step are required. Observations of a same time step are assumed to be replicates.}
 
 \item{resolution}{grid resolution on which the densities of probability will be computed. The resolution does not affect the result: high resolution increases the resolution of final diagrams but increases computation time and memory usage. The number of observations per time step should be roughly similar}
+
+\item{ncores}{Number of cores used. The parallelization will take place only if OpenMP is supported.}
 }
 \value{
-a list with two elements: \enumerate{
-\item the list of fitted kernels per time step
+a list with 3 elements: \enumerate{
+\item the list of data per time step
 \item a dafaframe with one row per time series and a column tau that gives the tau of Kendall trend test
+\item the cholesky decomposition of H
 }
 }
 \description{
@@ -32,7 +35,7 @@ carry out a choc analysis on a multivariate time series
 #the two series follow a multinormal time series with a tend on means and a constant
 #covariance matrix
 library(MASS)
-library(ks)
+require(ks)
 tvar <- rep(1:40,times=100) #times steps
 meansX <-tvar/40 #trend on 1st variable
 meansY <- -0.5*tvar/40 #trend on 2nd variable
