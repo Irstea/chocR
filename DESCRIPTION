@@ -1,6 +1,6 @@
 Package: chocR
 Title: Exploring the temporal CHange of OCcurence of events in multivariate time series
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: c(person("Hilaire","Drouineau",email="hilaire.drouineau@irstea.fr",role=c("aut","cre")),
     person("Elorri","Arevalo",role=c("aut")),
     person("Géraldine","Lassalle",email="geraldine.lassalle@irstea.fr",role=c("aut")),
