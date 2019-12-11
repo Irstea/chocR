@@ -46,7 +46,7 @@ To overcome this limitation, we provide a second method "perm". The method is ba
 
 
 ```{r eval=FALSE}
-res_confid <- estimate_confidence(res,"perm",0.95,1000) #be aware that this make take several hours
+res_confid <- estimate_confidence(res_choc,"perm",0.95,1000) #be aware that this make take several hours
 ```
 ```{r}
 g<-plot_choc(res_confid)
