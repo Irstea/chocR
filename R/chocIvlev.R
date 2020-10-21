@@ -23,9 +23,17 @@ chocIvlev <- function(chocRealised, chocAvailable) {
   if (!all(grid == chocAvailable$grid[, -ncol(chocAvailable$grid)]))
     stop("the choc objects grids should be similar")
   list_ivlev <- lapply(seq_along(chocRealised$list_data) , function(i){
+    realised <- dKernel(grid = as.matrix(grid),
+                        obs = chocRealised$list_data[[i]],
+                        probs = chocRealised$list_weights[[i]],
+                        rooti = chocRealised$root_i)
+    avalaible <- dKernel(grid = as.matrix(grid),
+                         obs = chocAvailable$list_data[[i]],
+                         probs = chocAvailable$list_weights[[i]],
+                         rooti = chocAvailable$root_i)
     cbind.data.frame(grid,
-                     data.frame(ivlev = computeIvlev(chocRealised[[i]],
-                                                     chocAvailable[[i]])
+                     data.frame(ivlev = computeIvlev(realised,
+                                                     avalaible)
                                 ))
   })
 

@@ -3,6 +3,7 @@
 #'
 #' @param mychoc a list returned by \code{\link{estimate_confidence}}
 #' @param ivar the two variables that should be plotted
+#' @param palette a color palette (4 colors, could be hexadecimal or names)
 #'
 #' @section Details:
 #' red means that there is a significant decrease of occurence of the association, pale red stands for non significant trend
@@ -23,10 +24,17 @@
 #'
 #' @export
 
-plot_choc <- function(mychoc, ivar = c(1, 2)) {
-  overall_data <-
-    do.call("rbind", mychoc$list_data)
+plot_choc <- function(mychoc,
+                      ivar = c(1, 2),
+                      palette = c("green", "palegreen1", "pink1", "red")) {
   mygrid <- mychoc$grid
+  if (class(mychoc) == "chocR"){
+    overall_data <-
+      do.call("rbind", mychoc$list_data)
+  } else {
+    overall_data <-
+      do.call("rbind", mychoc$chocRealised$list_data)
+  }
   if (ncol(overall_data) > 2) {
     ###if we have more than 2 dimensions, we plot the diagram at the quantile of other dimensions
     lev <- NA
@@ -41,6 +49,9 @@ plot_choc <- function(mychoc, ivar = c(1, 2)) {
     }
   }
 
+
+
+  names(palette) <- 1:4
   mygrid$icolor <- NA
   mygrid$icolor <-
     ifelse(
@@ -50,9 +61,9 @@ plot_choc <- function(mychoc, ivar = c(1, 2)) {
     )
   mygrid$icolor <- as.factor(mygrid$icolor)
   ggplot(mygrid, aes(x = mygrid[, ivar[1]], y = mygrid[, ivar[2]])) +
-    geom_tile(aes(fill = mygrid$icolor)) +
+    geom_tile(aes(fill = icolor)) +
     scale_fill_manual(
-      values = c( "green", "palegreen1", "pink1", "red"),
+      values = palette,
       guide = FALSE
     ) +
     xlab(names(overall_data[, ivar[1]])) +
