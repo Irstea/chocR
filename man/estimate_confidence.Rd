@@ -39,6 +39,6 @@ is no seasonnality within time step or when the number of observations per time 
 #retrieve results of a choc function
 data(res_choc)
 #here we put a low number of replicates to limit computation time
-res_confid <- estimate_confidence(res_choc,"perm",0.95,50)
+#res_confid <- estimate_confidence(res_choc,"perm",0.95,50)
 
 }

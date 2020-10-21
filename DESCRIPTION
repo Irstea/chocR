@@ -13,12 +13,17 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     Kendall,
+    Rcpp (>= 1.0.3),
     ggplot2,
     stats,
     grDevices,
     sp,
-    mvnfast,
-    utils
+    pcaPP,
+    utils,
+    dqrng,
+    pracma,
+    ccaPP
+LinkingTo: Rcpp, RcppArmadillo, dqrng    
 Suggests: 
     ks,
     knitr,

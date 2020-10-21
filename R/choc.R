@@ -4,16 +4,20 @@
 #' @param mydata a data frame or matrix with one column per time series and one row per observation (event). Marginal distributions are assumed to follow a normal distribution
 #' @param H either a function from library ks to estimate a bandwith matrix, or directly a bandwith matrix. Exemples of function \code{\link[ks]{Hpi}} or \code{\link[ks]{Hscv}}...
 #' @param timevar a vector specifying the time step for each observation. Several observations per time step are required. Observations of a same time step are assumed to be replicates.
+#' @param weights weights of the observations
 #' @param resolution grid resolution on which the densities of probability will be computed. The resolution does not affect the result: high resolution increases the resolution of final diagrams but increases computation time and memory usage. The number of observations per time step should be roughly similar
 #' @param ncores Number of cores used. The parallelization will take place only if OpenMP is supported.
 #'
-#' @return a list with 3 elements: \enumerate{
-#' \item the list of data per time step
-#' \item a dafaframe with one row per time series and a column tau that gives the tau of Kendall trend test
-#' \item the cholesky decomposition of H
+#' @return a chocR object, i.e. a list with 5 elements: \enumerate{
+#' \item list_data the list of data per time step
+#' \item grid a dafaframe with one row per time series and a column tau that gives the tau of Kendall trend test
+#' \item cholH the cholesky decomposition of H
+#' \item list_weights the weights of observation
+#' \item root_i a transformation of inv(trimatu(cholH))
 #' }
-#' @importFrom mvnfast dmvn
-#' @importFrom Kendall MannKendall
+#' @importFrom pcaPP cor.fk
+#' @importFrom grDevices chull
+#' @importFrom pracma inpolygon
 #' @examples
 #' #generate artificial data set
 #' #two time series measured on 40 time steps with 365 observations per time step.
@@ -30,36 +34,66 @@
 #' res_choc <- choc(values,H,tvar)
 #'
 #' @export
-choc <- function(mydata, H, timevar, resolution = 100,ncores=1) {
+choc <- function(mydata, H, timevar, weights= NULL, resolution = 100,ncores=1) {
+  if (is.null(weights))
+    weights <- rep (1/nrow(mydata), nrow(mydata))
+
   if (class(H) == "function") {
     H <- H(mydata)
   } else if (class(H) != "matrix") {
     stop ("H is not valid, should be a function or a matrix")
   }
   cholH <- chol(H)
+  root_i=get_root_i(cholH)
+
+
   #create a list of data per timestep
   list_data <- lapply(unique(timevar), function(y) {
     sub_mydata <- subset(mydata, timevar == y)
+    sub_mydata
   })
   names(list_data) <- unique(timevar)
+
+  list_weights <- lapply(unique(timevar), function(y) {
+    sub_weights <- subset(weights, timevar == y)
+    sub_weights <- sub_weights / sum(sub_weights)
+    sub_weights
+  })
+  names(list_weights) <- unique(timevar)
+
+  #get the convex hull
+  liste <- chull(cbind(mydata))
+  hull <- mydata[liste, ]
+
+
+
 
   #build a grid on which densities of probability will be computed
   grid <-
     expand.grid(as.list(as.data.frame(apply(mydata, 2, function(x)
       seq(min(x), max(x), length.out = resolution)))))
   names(grid) <- colnames(mydata)
+  grid <- grid[inpolygon(grid[, 1], grid[, 2], hull[, 1], hull[, 2]), ]
 
   #compute density for each point of the grid and each time step
   densprob <-
-    sapply(list_data, function(sdata){
-      rowMeans(apply(sdata,1,function(points){
-        dmvn(as.matrix(grid),points,sigma=cholH,isChol=TRUE,ncores=ncores)
-      }))
-    })
+    sapply(seq_along(list_data), function(i){
+      sdata <- list_data[[i]]
+      weights <- list_weights[[i]]
+      dKernel(grid = as.matrix(grid),
+              obs = sdata,
+              probs = weights,
+              rooti = root_i)
+      })
 
   #compute tau kendall
+  years <- seq_len(length(list_data))
   grid$tau <- apply(densprob, 1, function(x)
-    MannKendall(x)$tau)
+    cor.fk(x, years))
 
-  return(list(list_data=list_data,grid=grid,cholH=cholH))
+  res <- list(list_data=list_data,grid=grid,cholH=cholH,
+              list_weights=list_weights,
+              root_i=root_i)
+  class(res) <- "chocR"
+  return(res)
 }

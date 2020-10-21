@@ -11,11 +11,9 @@
 #' @return a ggplot object
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes
-#' @importFrom grDevices chull
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
-#' @importFrom ggplot2 geom_raster
-#' @importFrom sp point.in.polygon
+#' @importFrom ggplot2 geom_tile
 #' @importFrom ggplot2 scale_fill_manual
 #' @examples
 #' #example of results provided by estimate_confidence
@@ -43,12 +41,6 @@ plot_choc <- function(mychoc, ivar = c(1, 2)) {
     }
   }
 
-  mychull <- chull(overall_data[, ivar])
-  mychull <- c(mychull, mychull[1])
-
-  mygrid$inhull <-
-    point.in.polygon(mygrid[, ivar[1]], mygrid[, ivar[2]], pol.x = overall_data[mychull, 1], pol.y =
-                       overall_data[mychull, 2])
   mygrid$icolor <- NA
   mygrid$icolor <-
     ifelse(
@@ -56,12 +48,11 @@ plot_choc <- function(mychoc, ivar = c(1, 2)) {
       ifelse(mygrid$tau > mygrid$bsup, 1, 2),
       ifelse(mygrid$tau < mygrid$binf, 4, 3)
     )
-  mygrid$icolor <- ifelse(mygrid$inhull, mygrid$icolor, 0)
   mygrid$icolor <- as.factor(mygrid$icolor)
   ggplot(mygrid, aes(x = mygrid[, ivar[1]], y = mygrid[, ivar[2]])) +
-    geom_raster(aes(fill = mygrid$icolor)) +
+    geom_tile(aes(fill = mygrid$icolor)) +
     scale_fill_manual(
-      values = c("white", "green", "palegreen1", "pink1", "red"),
+      values = c( "green", "palegreen1", "pink1", "red"),
       guide = FALSE
     ) +
     xlab(names(overall_data[, ivar[1]])) +
