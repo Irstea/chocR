@@ -5,12 +5,15 @@
 \title{plot_choc
 Plot the result of choc analysis}
 \usage{
-plot_choc(mychoc, ivar = c(1, 2))
+plot_choc(mychoc, ivar = c(1, 2), palette = c("green", "palegreen1",
+  "pink1", "red"))
 }
 \arguments{
 \item{mychoc}{a list returned by \code{\link{estimate_confidence}}}
 
 \item{ivar}{the two variables that should be plotted}
+
+\item{palette}{a color palette (4 colors, could be hexadecimal or names)}
 }
 \value{
 a ggplot object
