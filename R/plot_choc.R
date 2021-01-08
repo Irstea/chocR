@@ -11,6 +11,7 @@
 #'
 #' @return a ggplot object
 #' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
@@ -61,7 +62,7 @@ plot_choc <- function(mychoc,
     )
   mygrid$icolor <- as.factor(mygrid$icolor)
   ggplot(mygrid, aes(x = mygrid[, ivar[1]], y = mygrid[, ivar[2]])) +
-    geom_tile(aes(fill = icolor)) +
+    geom_tile(aes_string(fill = "icolor")) +
     scale_fill_manual(
       values = palette,
       guide = FALSE

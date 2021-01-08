@@ -19,7 +19,7 @@ overallNiche <- function(mychoc) {
                         probs = overallWeights,
                         rooti = mychoc$root_i)
     res <- cbind.data.frame(grid,
-                     data.frame(dens = dens))
+                     data.frame(dens = niche))
 
   return(res)
 }

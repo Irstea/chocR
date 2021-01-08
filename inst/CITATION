@@ -1,0 +1,35 @@
+citHeader("To cite chocR in publications use:")
+
+citEntry(
+  entry    = "Manual",
+  title    = "Exploring the temporal CHange of OCcurence of events in multivariate time series",
+  author   = c(person("Hilaire", "Drouineau"),
+ person("Elorri", "Arevalo"),
+ person("Géraldine", "Lassalle"),
+ person("Stéphane", "Tétard"),
+  person("Maire", "Anthony")),
+  year     = "2019",
+  url      = "https://gitlab.irstea.fr/hilaire.drouineau/can/tree/master/RCaN",
+  textVersion = NULL)
+
+
+
+citEntry(
+  entry    = "Article",
+  title    = "An innovative bivariate approach to detect joint temporal trends in environmental conditions: Application to large French rivers and diadromous fish",
+  author   = c(person("Elorri", "Arevalo"),
+  person("Géraldine", "Lassalle"),
+ person("Stéphane", "Tétard"),
+  person("Maire", "Anthony"),
+  person("Eric", "Sauquet"),
+  person("Patrick", "Lambert"),
+  person("Alexis", "Paumier"),
+  person("Bertrand", "Villeneuve"),
+  person("Hilaire", "Drouineau") ),
+ journal="Science of The Total Environment",
+ volume="748",
+ pages="141260",
+  year  = "2020",
+  doi="10.1016/j.scitotenv.2020.141260",
+  url = "https://gitlab.irstea.fr/hilaire.drouineau/can/tree/master/RCaN",
+  textVersion = NULL)
