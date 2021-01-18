@@ -17,7 +17,9 @@
 chocIvlev <- function(chocRealised, chocAvailable) {
   if (class(chocRealised) != "chocR")
     stop("chocRealised should be a chocR object")
-  grid <- chocRealised$grid[, -ncol(chocRealised$grid)]
+  grid <- chocRealised$grid[, !names(chocRealised$grid) %in% c("tau",
+                                                               "binf",
+                                                               "bsup")]
   if (class(chocAvailable) != "chocR")
     stop("chocAvailable should be a chocR object")
   if (!all(grid == chocAvailable$grid[, -ncol(chocAvailable$grid)]))
