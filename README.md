@@ -1,5 +1,8 @@
 chocR: a R package implementing choc analysis
 ==================================================
+
+<img src="man/figures/logo.png" align="right" width="220" />
+
 ---
 License: BSD3
 
