@@ -5,8 +5,12 @@
 \title{estimate_confidenceIvlev
 estimate confidence intervals for chocIvlev analysis}
 \usage{
-estimate_confidenceIvlev(mychocIvlev, conf = 0.95, nb_replicates = 500,
-  ncores = 1)
+estimate_confidenceIvlev(
+  mychocIvlev,
+  conf = 0.95,
+  nb_replicates = 500,
+  ncores = 1
+)
 }
 \arguments{
 \item{mychocIvlev}{an object returned by \link{chocIvlev}}

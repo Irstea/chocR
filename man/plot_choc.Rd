@@ -5,8 +5,11 @@
 \title{plot_choc
 Plot the result of choc analysis}
 \usage{
-plot_choc(mychoc, ivar = c(1, 2), palette = c("green", "palegreen1",
-  "pink1", "red"))
+plot_choc(
+  mychoc,
+  ivar = c(1, 2),
+  palette = c("green", "palegreen1", "pink1", "red")
+)
 }
 \arguments{
 \item{mychoc}{a list returned by \code{\link{estimate_confidence}}}

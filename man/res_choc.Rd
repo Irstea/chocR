@@ -4,7 +4,9 @@
 \name{res_choc}
 \alias{res_choc}
 \title{sample results of a \code{\link{choc}} function}
-\format{see \code{\link{choc}}}
+\format{
+see \code{\link{choc}}
+}
 \usage{
 res_choc
 }

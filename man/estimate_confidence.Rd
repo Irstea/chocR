@@ -5,8 +5,13 @@
 \title{estimate_confidence
 estimate confidence intervals for choc analysis}
 \usage{
-estimate_confidence(mychoc, method = "perm", conf = 0.95,
-  nb_replicates = 500, ncores = 1)
+estimate_confidence(
+  mychoc,
+  method = "perm",
+  conf = 0.95,
+  nb_replicates = 500,
+  ncores = 1
+)
 }
 \arguments{
 \item{mychoc}{a list as returned by \link{choc}}

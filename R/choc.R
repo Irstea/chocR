@@ -18,20 +18,21 @@
 #' @importFrom pcaPP cor.fk
 #' @importFrom grDevices chull
 #' @importFrom pracma inpolygon
+#' @import Rcpp
 #' @examples
 #' #generate artificial data set
 #' #two time series measured on 40 time steps with 365 observations per time step.
 #' #the two series follow a multinormal time series with a tend on means and a constant
 #' #covariance matrix
-#' library(MASS)
-#' require(ks)
-#' tvar <- rep(1:40,times=100) #times steps
-#' meansX <-tvar/40 #trend on 1st variable
-#' meansY <- -0.5*tvar/40 #trend on 2nd variable
-#' sigma <- matrix(c(1,.1,.1,1),2,2) #covariance matrix
-#' values <- t(apply(cbind(meansX,meansY),1,function(mu) mvrnorm(1,mu,sigma))) #generate the values
-#' H <- Hpi #choose the default bandwith
-#' res_choc <- choc(values,H,tvar)
+#' if (require(MASS) & require(ks)){
+#'   tvar <- rep(1:40,times=100) #times steps
+#'   meansX <-tvar/40 #trend on 1st variable
+#'   meansY <- -0.5*tvar/40 #trend on 2nd variable
+#'   sigma <- matrix(c(1,.1,.1,1),2,2) #covariance matrix
+#'   values <- t(apply(cbind(meansX,meansY),1,function(mu) mvrnorm(1,mu,sigma))) #generate the values
+#'   H <- Hpi #choose the default bandwith
+#'   res_choc <- choc(values,H,tvar)
+#' }
 #'
 #' @export
 choc <- function(mydata, H, timevar, weights= NULL, resolution = 100,ncores=1) {

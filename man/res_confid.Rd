@@ -4,7 +4,9 @@
 \name{res_confid}
 \alias{res_confid}
 \title{sample results of a \code{\link{estimate_confidence}} function}
-\format{see \code{\link{estimate_confidence}}}
+\format{
+see \code{\link{estimate_confidence}}
+}
 \usage{
 res_confid
 }
