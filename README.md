@@ -12,6 +12,7 @@ The easiest solution is to use the 'devtools' packages, this will installed the 
 * on Mac: [Xcode command line tools](https://developer.apple.com/downloads)  
 * on Linux: the R development package, usually called r-devel or r-base-dev  
   
+On Mac, you may also need to add specific tools for Rcpp and RcppArmadillo, have a look [there](https://thecoatlessprofessor.com/programming/cpp/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/) to see the solution depending on your MAC OS version
 To generate the vignette, you also need to have pandoc and pandoc-citeproc installed. Instructions can be found [here](https://pandoc.org/installing.html).    
   
 Then, on a R console:
