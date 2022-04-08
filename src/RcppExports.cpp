@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // dKernel
 arma::colvec dKernel(arma::mat const& grid, arma::mat const& obs, arma::vec const& probs, arma::mat const& rooti);
 RcppExport SEXP _chocR_dKernel(SEXP gridSEXP, SEXP obsSEXP, SEXP probsSEXP, SEXP rootiSEXP) {

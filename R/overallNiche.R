@@ -15,7 +15,7 @@ overallNiche <- function(mychoc) {
   overallData <- do.call(rbind.data.frame, mychoc$list_data)
   overallWeights <- do.call(c, mychoc$list_weights)
   niche <- dKernel(grid = as.matrix(grid),
-                        obs = overallData,
+                        obs = as.matrix(overallData),
                         probs = overallWeights,
                         rooti = mychoc$root_i)
     res <- cbind.data.frame(grid,

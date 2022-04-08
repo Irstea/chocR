@@ -21,11 +21,11 @@ overallIvlev <- function(chocRealised, chocAvailable) {
   overallRealisedData <- do.call(rbind.data.frame, chocRealised$list_data)
   overallRealisedWeights <- do.call(c, chocRealised$list_weights)
   realised <- dKernel(grid = as.matrix(grid),
-                        obs = overallRealisedData,
+                        obs = as.matrix(overallRealisedData),
                         probs = overallRealisedWeights,
                         rooti = chocRealised$root_i)
     avalaible <- dKernel(grid = as.matrix(grid),
-                         obs = overallAvailabeData,
+                         obs = as.matrix(overallAvailabeData),
                          probs = overallAvailabeWeights,
                          rooti = chocAvailable$root_i)
     res <- cbind.data.frame(grid,

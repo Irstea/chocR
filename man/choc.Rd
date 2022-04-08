@@ -35,7 +35,7 @@ carry out a choc analysis on a multivariate time series
 }
 \examples{
 #generate artificial data set
-#two time series measured on 40 time steps with 365 observations per time step.
+#two time series measured on 40 time steps with 100 observations per time step.
 #the two series follow a multinormal time series with a tend on means and a constant
 #covariance matrix
 if (require(MASS) & require(ks)){
