@@ -65,7 +65,7 @@ plot_choc <- function(mychoc,
     geom_tile(aes_string(fill = "icolor")) +
     scale_fill_manual(
       values = palette,
-      guide = FALSE
+      guide = "none"
     ) +
     xlab(names(overall_data[, ivar[1]])) +
     ylab(names(overall_data[, ivar[2]]))
