@@ -6,6 +6,7 @@
 #'
 #' @return a data.frame with the grid and and the corresponding density
 #'
+#' @importFrom ks kde
 #' @export
 overallNiche <- function(mychoc) {
   if (class(mychoc) != "chocR")
@@ -14,12 +15,12 @@ overallNiche <- function(mychoc) {
 
   overallData <- do.call(rbind.data.frame, mychoc$list_data)
   overallWeights <- do.call(c, mychoc$list_weights)
-  niche <- dKernel(grid = as.matrix(grid),
-                        obs = as.matrix(overallData),
-                        probs = overallWeights,
-                        rooti = mychoc$root_i)
-    res <- cbind.data.frame(grid,
-                     data.frame(dens = niche))
-
+  niche <- kde(eval.points = as.matrix(grid),
+               x = as.matrix(overallData),
+               w = overallWeights / sum(overallWeights),
+               H = mychoc$H,
+               binned = TRUE)$estimate
+  res <- cbind.data.frame(grid,
+                          data.frame(dens = niche))
   return(res)
 }

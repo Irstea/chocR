@@ -13,6 +13,7 @@
 #' \item grid the Kendall tau on the grid
 #' }
 #'
+#' @importFrom ks kde
 #' @export
 chocIvlev <- function(chocRealised, chocAvailable) {
   if (class(chocRealised) != "chocR")
@@ -25,17 +26,27 @@ chocIvlev <- function(chocRealised, chocAvailable) {
   if (!all(grid == chocAvailable$grid[, -ncol(chocAvailable$grid)]))
     stop("the choc objects grids should be similar")
   list_ivlev <- lapply(seq_along(chocRealised$list_data) , function(i){
-    realised <- dKernel(grid = as.matrix(grid),
-                        obs = chocRealised$list_data[[i]],
-                        probs = chocRealised$list_weights[[i]],
-                        rooti = chocRealised$root_i)
-    avalaible <- dKernel(grid = as.matrix(grid),
-                         obs = chocAvailable$list_data[[i]],
-                         probs = chocAvailable$list_weights[[i]],
-                         rooti = chocAvailable$root_i)
+
+
+    realised <-  kde(eval.points = as.matrix(grid),
+                     x = as.matrix(chocRealised$list_data[[i]]),
+                     w = chocRealised$list_weights[[i]] /
+                       sum(chocRealised$list_weights[[i]]),
+                     H = chocRealised$H,
+                     binned = TRUE)$estimate
+
+    avalaible <-  kde(eval.points = as.matrix(grid),
+                      x = as.matrix(chocAvailable$list_data[[i]]),
+                      w = chocAvailable$list_weights[[i]] /
+                        sum(chocAvailable$list_weights[[i]]),
+                      H = chocAvailable$H,
+                      binned = TRUE)$estimate
+
+
+
     cbind.data.frame(grid,
-                     data.frame(ivlev = computeIvlev(realised,
-                                                     avalaible)
+                     data.frame(ivlev = (realised - avalaible) /
+                                  (realised + avalaible)
                                 ))
   })
 

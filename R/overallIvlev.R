@@ -6,6 +6,7 @@
 #' with chocRealised
 #'
 #' @return a data.frame with the grid and an ivlev index
+#' @importFrom ks kde
 #'
 #' @export
 overallIvlev <- function(chocRealised, chocAvailable) {
@@ -20,17 +21,23 @@ overallIvlev <- function(chocRealised, chocAvailable) {
   overallAvailabeWeights <- do.call(c, chocAvailable$list_weights)
   overallRealisedData <- do.call(rbind.data.frame, chocRealised$list_data)
   overallRealisedWeights <- do.call(c, chocRealised$list_weights)
-  realised <- dKernel(grid = as.matrix(grid),
-                        obs = as.matrix(overallRealisedData),
-                        probs = overallRealisedWeights,
-                        rooti = chocRealised$root_i)
-    avalaible <- dKernel(grid = as.matrix(grid),
-                         obs = as.matrix(overallAvailabeData),
-                         probs = overallAvailabeWeights,
-                         rooti = chocAvailable$root_i)
+
+
+  realised <-  kde(eval.points = as.matrix(grid),
+                   x = as.matrix(overallRealisedData),
+                   w = overallRealisedWeights / sum(overallRealisedWeights),
+                   H = chocRealised$H,
+                   binned = TRUE)$estimate
+
+  avalaible <-  kde(eval.points = as.matrix(grid),
+                   x = as.matrix(overallAvailabeData),
+                   w = overallAvailabeWeights / sum(overallAvailabeWeights),
+                   H = chocAvailable$H,
+                   binned = TRUE)$estimate
+
     res <- cbind.data.frame(grid,
-                     data.frame(ivlev = computeIvlev(realised,
-                                                     avalaible)))
+                     data.frame(ivlev = (realised - avalaible) /
+                                  (realised + avalaible)))
 
   return(res)
 }

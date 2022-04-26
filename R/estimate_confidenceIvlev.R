@@ -19,23 +19,52 @@ estimate_confidenceIvlev <-
   function(mychocIvlev,
            conf = 0.95,
            nb_replicates = 500,
-           ncores=1) {
+           ncores = 1) {
     thresholds <- NA
     pb <- txtProgressBar(min = 0, max = nb_replicates, style = 3)
     grid_points <- mychocIvlev$grid[, -ncol(mychocIvlev$grid)]
     years <- seq_len(length(mychocIvlev$list_ivlev))
     ivlevs <- sapply(mychocIvlev$list_ivlev, function (li) li$ivlev)
-    thresholds <- apply(sapply(1:nb_replicates, function(r){
-        iperm <- sample.int(length(mychocIvlev$list_ivlev), replace = TRUE)
-        perm_list_ivlev <- ivlevs[, ivlevs]
-        perm_tau <- apply(ivlevs, 1, function(x)
-          cor.fk(x, years))
-        setTxtProgressBar(pb,r)
-        perm_tau
-      }),
-      1,
-      quantile,
-      probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
+
+    parallel <- FALSE
+    if (requireNamespace("parallel", quietly = TRUE) & ncores > 1) {
+      cl <- parallel::makeCluster(ncores)
+      parallel <- TRUE
+      parallel::clusterEvalQ(cl, {
+        library(ks)
+        library(chocR)
+      })
+      parallel::clusterExport(cl, list("mychocIvlev",
+                                       "ivlevs",
+                                       "replicatefunction"),
+                              envir = environment())
+    }
+
+    replicatefunction <- function (r){
+      iperm <- sample.int(length(mychocIvlev$list_ivlev), replace = TRUE)
+      perm_list_ivlev <- ivlevs[, ivlevs]
+      perm_tau <- apply(ivlevs, 1, function(x)
+        cor.fk(x, years))
+      setTxtProgressBar(pb,r)
+      perm_tau
+    }
+
+
+    if (! parallel) {
+      thresholds <- apply(sapply(seq_len(nb_replicates), replicatefunction),
+                          1,
+                          quantile,
+                          probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
+    } else {
+      thresholds <- apply(parallel::parSapply(cl,
+                                              seq_len(nb_replicates),
+                                              replicatefunction),
+                          1,
+                          quantile,
+                          probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
+    }
+
+
 
     mychocIvlev$grid$binf <- thresholds[1, ]
     mychocIvlev$grid$bsup <- thresholds[2, ]

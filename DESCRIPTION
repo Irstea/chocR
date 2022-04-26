@@ -22,10 +22,10 @@ Imports:
     utils,
     dqrng,
     pracma,
-    ccaPP
+    ccaPP,
+    ks
 LinkingTo: Rcpp, RcppArmadillo, dqrng    
 Suggests: 
-    ks,
     knitr,
     rmarkdown,
     MASS

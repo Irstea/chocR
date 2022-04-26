@@ -17,6 +17,7 @@
 #' }
 #' @importFrom pcaPP cor.fk
 #' @importFrom grDevices chull
+#' @importFrom ks kde
 #' @importFrom pracma inpolygon
 #' @import Rcpp
 #' @examples
@@ -35,7 +36,12 @@
 #' }
 #'
 #' @export
-choc <- function(mydata, H, timevar, weights= NULL, resolution = 100,ncores=1) {
+choc <- function(mydata,
+                 H,
+                 timevar,
+                 weights = NULL,
+                 resolution = 100,
+                 ncores = 1) {
   if (is.null(weights))
     weights <- rep (1/nrow(mydata), nrow(mydata))
 
@@ -45,7 +51,7 @@ choc <- function(mydata, H, timevar, weights= NULL, resolution = 100,ncores=1) {
     stop ("H is not valid, should be a function or a matrix")
   }
   cholH <- chol(H)
-  root_i=get_root_i(cholH)
+  root_i = get_root_i(cholH)
 
 
   #create a list of data per timestep
@@ -81,10 +87,12 @@ choc <- function(mydata, H, timevar, weights= NULL, resolution = 100,ncores=1) {
     sapply(seq_along(list_data), function(i){
       sdata <- list_data[[i]]
       weights <- list_weights[[i]]
-      dKernel(grid = as.matrix(grid),
-              obs = sdata,
-              probs = weights,
-              rooti = root_i)
+      kde(x = sdata,
+          H = H,
+          eval.points = as.matrix(grid),
+          w = weights/sum(weights),
+          binned = TRUE)$estimate
+
       })
 
   #compute tau kendall
@@ -92,9 +100,12 @@ choc <- function(mydata, H, timevar, weights= NULL, resolution = 100,ncores=1) {
   grid$tau <- apply(densprob, 1, function(x)
     cor.fk(x, years))
 
-  res <- list(list_data=list_data,grid=grid,cholH=cholH,
-              list_weights=list_weights,
-              root_i=root_i)
+  res <- list(list_data = list_data,
+              grid = grid,
+              H = H,
+              cholH = cholH,
+              list_weights = list_weights,
+              root_i = root_i)
   class(res) <- "chocR"
   return(res)
 }
