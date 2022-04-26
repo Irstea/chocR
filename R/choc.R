@@ -51,7 +51,7 @@ choc <- function(mydata,
     stop ("H is not valid, should be a function or a matrix")
   }
   cholH <- chol(H)
-  root_i = get_root_i(cholH)
+  # root_i = get_root_i(cholH)
 
 
   #create a list of data per timestep
@@ -104,8 +104,7 @@ choc <- function(mydata,
               grid = grid,
               H = H,
               cholH = cholH,
-              list_weights = list_weights,
-              root_i = root_i)
+              list_weights = list_weights)
   class(res) <- "chocR"
   return(res)
 }

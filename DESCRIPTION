@@ -20,9 +20,7 @@ Imports:
     sp,
     pcaPP,
     utils,
-    dqrng,
     pracma,
-    ccaPP,
     ks
 Suggests: 
     knitr,
