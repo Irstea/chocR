@@ -24,7 +24,6 @@ Imports:
     pracma,
     ccaPP,
     ks
-LinkingTo: Rcpp, RcppArmadillo, dqrng    
 Suggests: 
     knitr,
     rmarkdown,
