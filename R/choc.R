@@ -19,7 +19,7 @@
 #' @importFrom grDevices chull
 #' @importFrom ks kde
 #' @importFrom pracma inpolygon
-#' @import Rcpp
+#' @importFrom dplyr coalesce
 #' @examples
 #' #generate artificial data set
 #' #two time series measured on 40 time steps with 100 observations per time step.
@@ -45,9 +45,9 @@ choc <- function(mydata,
   if (is.null(weights))
     weights <- rep (1/nrow(mydata), nrow(mydata))
 
-  if (class(H) == "function") {
+  if (inherits(H, "function")) {
     H <- H(mydata)
-  } else if (class(H) != "matrix") {
+  } else if (!inherits(H, "matrix")) {
     stop ("H is not valid, should be a function or a matrix")
   }
   cholH <- chol(H)
@@ -98,11 +98,7 @@ choc <- function(mydata,
   #compute tau kendall
   years <- seq_len(length(list_data))
   grid$tau <- apply(densprob, 1, function(x){
-    if(length(unique(x)) == 1) {
-      return (0)
-    } else {
-      return(cor.fk(x, years))
-    }
+    return(coalesce(cor.fk(x, years), 0))
   })
 
   res <- list(list_data = list_data,

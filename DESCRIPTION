@@ -12,16 +12,14 @@ License: BSD_3_clause + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    Kendall,
-    Rcpp (>= 1.0.3),
     ggplot2,
     stats,
     grDevices,
-    sp,
     pcaPP,
     utils,
     pracma,
-    ks
+    ks,
+    dplyr
 Suggests: 
     knitr,
     rmarkdown,

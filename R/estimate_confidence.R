@@ -20,6 +20,7 @@
 #' @importFrom ks kde
 #' @importFrom ks rkde
 #' @importFrom pcaPP cor.fk
+#' @importFrom dplyr coalesce
 #' @examples
 #' #retrieve results of a choc function
 #' data(res_choc)
@@ -38,8 +39,11 @@ estimate_confidence <-
     H <- mychoc$H
     parallel <- FALSE
     if (requireNamespace("parallel", quietly = TRUE) & ncores > 1) {
-      cl <- parallel::makeCluster(ncores)
+      cl <- parallel::makeCluster(min(ncores,
+                                      parallel::detectCores()-1))
       parallel <- TRUE
+    } else if (ncores > 1) {
+      print("package parallel should be installed to use several cores")
     }
     thresholds <- NA
     years <- seq_len(length(mychoc$list_data))
@@ -84,11 +88,7 @@ estimate_confidence <-
 
           })
         tau <- apply(mock_dens, 1, function(x){
-          if(length(unique(x)) == 1) {
-            return (0)
-          } else {
-            return(cor.fk(x, years))
-          }
+          return(coalesce(cor.fk(x, years), 0))
         }
         )
         if(length(which(is.na(tau)))>0) {
@@ -142,11 +142,7 @@ estimate_confidence <-
           })
 
         perm_tau <- apply(perm_dens, 1, function(x){
-          if(length(unique(x)) == 1) {
-            return (0)
-          } else {
-            return(cor.fk(x, years))
-          }
+          return(coalesce(cor.fk(x, years), 0))
         })
         setTxtProgressBar(pb,r)
         perm_tau

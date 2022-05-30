@@ -11,6 +11,7 @@
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom stats quantile
 #' @importFrom pcaPP cor.fk
+#' @importFrom dplyr coalesce
 #'
 #' @export
 
@@ -28,7 +29,8 @@ estimate_confidenceIvlev <-
 
     parallel <- FALSE
     if (requireNamespace("parallel", quietly = TRUE) & ncores > 1) {
-      cl <- parallel::makeCluster(ncores)
+      cl <- parallel::makeCluster(min(ncores,
+                                      parallel::detectCores()-1))
       parallel <- TRUE
       parallel::clusterEvalQ(cl, {
         library(ks)
@@ -38,17 +40,15 @@ estimate_confidenceIvlev <-
                                        "ivlevs",
                                        "replicatefunction"),
                               envir = environment())
+    } else if (ncores > 1){
+      print("package parallel should be installed to use several cores")
     }
 
     replicatefunction <- function (r){
       iperm <- sample.int(length(mychocIvlev$list_ivlev), replace = TRUE)
       perm_list_ivlev <- ivlevs[, ivlevs]
       perm_tau <- apply(ivlevs, 1, function(x){
-        if(length(unique(x)) == 1) {
-          return (0)
-        } else {
-          return(cor.fk(x, years))
-        }
+        return(coalesce(cor.fk(x, years), 0))
       })
       setTxtProgressBar(pb,r)
       perm_tau

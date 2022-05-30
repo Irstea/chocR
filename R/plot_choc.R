@@ -29,7 +29,7 @@ plot_choc <- function(mychoc,
                       ivar = c(1, 2),
                       palette = c("green", "palegreen1", "pink1", "red")) {
   mygrid <- mychoc$grid
-  if (class(mychoc) == "chocR"){
+  if (inherits(mychoc, "chocR")){
     overall_data <-
       do.call("rbind", mychoc$list_data)
   } else {

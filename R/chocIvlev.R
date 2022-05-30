@@ -14,6 +14,7 @@
 #' }
 #'
 #' @importFrom ks kde
+#' @importFrom dplyr coalesce
 #' @export
 chocIvlev <- function(chocRealised, chocAvailable) {
   if (class(chocRealised) != "chocR")
@@ -54,11 +55,7 @@ chocIvlev <- function(chocRealised, chocAvailable) {
   grid$tau <- apply(sapply(list_ivlev, function (li) li$ivlev),
                     1,
                     function(x) {
-                      if(length(unique(x)) == 1) {
-                        return (0)
-                      } else {
-                        return(cor.fk(x, years))
-                      }
+                      return(coalesce(cor.fk(x, years), 0))
                     })
 
   res <- list(chocRealised = chocRealised,
