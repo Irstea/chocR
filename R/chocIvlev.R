@@ -47,13 +47,19 @@ chocIvlev <- function(chocRealised, chocAvailable) {
     cbind.data.frame(grid,
                      data.frame(ivlev = (realised - avalaible) /
                                   (realised + avalaible)
-                                ))
+                     ))
   })
 
   years <- seq_len(length(list_ivlev))
   grid$tau <- apply(sapply(list_ivlev, function (li) li$ivlev),
                     1,
-                    function(x) cor.fk(x, years))
+                    function(x) {
+                      if(length(unique(x)) == 1) {
+                        return (0)
+                      } else {
+                        return(cor.fk(x, years))
+                      }
+                    })
 
   res <- list(chocRealised = chocRealised,
               chocAvailable = chocAvailable,

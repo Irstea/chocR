@@ -43,8 +43,13 @@ estimate_confidenceIvlev <-
     replicatefunction <- function (r){
       iperm <- sample.int(length(mychocIvlev$list_ivlev), replace = TRUE)
       perm_list_ivlev <- ivlevs[, ivlevs]
-      perm_tau <- apply(ivlevs, 1, function(x)
-        cor.fk(x, years))
+      perm_tau <- apply(ivlevs, 1, function(x){
+        if(length(unique(x)) == 1) {
+          return (0)
+        } else {
+          return(cor.fk(x, years))
+        }
+      })
       setTxtProgressBar(pb,r)
       perm_tau
     }

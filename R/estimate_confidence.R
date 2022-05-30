@@ -141,8 +141,13 @@ estimate_confidence <-
 
           })
 
-        perm_tau <- apply(perm_dens, 1, function(x)
-          cor.fk(x, years))
+        perm_tau <- apply(perm_dens, 1, function(x){
+          if(length(unique(x)) == 1) {
+            return (0)
+          } else {
+            return(cor.fk(x, years))
+          }
+        })
         setTxtProgressBar(pb,r)
         perm_tau
       }),

@@ -97,8 +97,13 @@ choc <- function(mydata,
 
   #compute tau kendall
   years <- seq_len(length(list_data))
-  grid$tau <- apply(densprob, 1, function(x)
-    cor.fk(x, years))
+  grid$tau <- apply(densprob, 1, function(x){
+    if(length(unique(x)) == 1) {
+      return (0)
+    } else {
+      return(cor.fk(x, years))
+    }
+  })
 
   res <- list(list_data = list_data,
               grid = grid,
