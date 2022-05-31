@@ -42,6 +42,10 @@ estimate_confidence <-
       cl <- parallel::makeCluster(min(ncores,
                                       parallel::detectCores()-1))
       parallel <- TRUE
+      parallel::clusterEvalQ(cl, {
+        library(ks)
+        library(chocR)
+      })
     } else if (ncores > 1) {
       print("package parallel should be installed to use several cores")
     }
@@ -99,31 +103,26 @@ estimate_confidence <-
       }
 
 
-      if (parallel) {
-        parallel::clusterEvalQ(cl, {
-          library(ks)
-          library(chocR)
-        })
-        parallel::clusterExport(cl, list("nb_obs",
-                                         "mychoc",
-                                         "overall_data",
-                                         "overall_weight",
-                                         "replicatefunction"),
-                                envir = environment())
-      }
       if (! parallel) {
         thresholds <- apply(sapply(seq_len(nb_replicates), replicatefunction),
                             1,
                             quantile,
                             probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
       } else {
-        thresholds <- apply(parallel::parSapply(cl,seq_len(nb_replicates), replicatefunction),
+        parallel::clusterExport(cl, list("nb_obs",
+                                         "mychoc",
+                                         "overall_data",
+                                         "overall_weight",
+                                         "replicatefunction"),
+                                envir = environment())
+        thresholds <- apply(parallel::parSapply(cl,seq_len(nb_replicates),
+                                                replicatefunction),
                             1,
                             quantile,
                             probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
       }
     } else if (method == "perm") {
-      thresholds <- apply(sapply(1:nb_replicates, function(r){
+      replicatefunction <- function(r){
         iperm <- sample.int(length(mychoc$list_data), replace = TRUE)
         perm_list_data <-
           mychoc$list_data[iperm]
@@ -146,10 +145,22 @@ estimate_confidence <-
         })
         setTxtProgressBar(pb,r)
         perm_tau
-      }),
-      1,
-      quantile,
-      probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
+      }
+      if (! parallel) {
+        thresholds <- apply(sapply(seq_len(nb_replicates), replicatefunction),
+                            1,
+                            quantile,
+                            probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
+      } else {
+        parallel::clusterExport(cl, list("mychoc",
+                                         "replicatefunction"),
+                                envir = environment())
+        thresholds <- apply(parallel::parSapply(cl,seq_len(nb_replicates),
+                                                replicatefunction),
+                            1,
+                            quantile,
+                            probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
+      }
     } else{
       stop("wrong method")
     }
