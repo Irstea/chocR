@@ -6,6 +6,7 @@
 #' @param conf size of the confidence interval
 #' @param nb_replicates number of replicates used to assess confidence intervals
 #' @param ncores Number of cores used. The parallelization will take place only if OpenMP is supported (default 1)
+#' @param progressbar (default TRUE) show progressbar (might be a bit slower)
 #'
 #' @section Details:
 #' Two methods are available: perm permutates the kernell per time step and estimates Kendall tau on permutations.
@@ -15,7 +16,7 @@
 #' is no seasonnality within time step or when the number of observations per time step is important enough.
 #'
 #' @return an updated version of mychoc with two columns added to mychoc$grid which corresponds to the bounds of the confidence interval
-#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom pbapply pbsapply
 #' @importFrom stats quantile
 #' @importFrom ks kde
 #' @importFrom ks rkde
@@ -35,9 +36,11 @@ estimate_confidence <-
            method = "perm",
            conf = 0.95,
            nb_replicates = 500,
-           ncores = 1) {
+           ncores = 1,
+           progressbar = TRUE) {
     H <- mychoc$H
     parallel <- FALSE
+    cl <- NULL #by default no cluster
     if (requireNamespace("parallel", quietly = TRUE) & ncores > 1) {
       cl <- parallel::makeCluster(min(ncores,
                                       parallel::detectCores()-1))
@@ -49,11 +52,13 @@ estimate_confidence <-
     } else if (ncores > 1) {
       print("package parallel should be installed to use several cores")
     }
+
+    if (! progressbar)
+      getOption("pboptions")$type == "none"
     thresholds <- NA
     years <- seq_len(length(mychoc$list_data))
     grid_points <- mychoc$grid[, -ncol(mychoc$grid)]
     cholH <- mychoc$cholH
-    pb <- txtProgressBar(min = 0, max = nb_replicates, style = 3)
     if (method == "kern") {
       overall_data <-
         do.call("rbind", mychoc$list_data)
@@ -98,29 +103,25 @@ estimate_confidence <-
         if(length(which(is.na(tau)))>0) {
           browser()
         }
-        setTxtProgressBar(pb,r)
         tau
       }
 
 
-      if (! parallel) {
-        thresholds <- apply(sapply(seq_len(nb_replicates), replicatefunction),
-                            1,
-                            quantile,
-                            probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
-      } else {
+      if (parallel) {
         parallel::clusterExport(cl, list("nb_obs",
                                          "mychoc",
                                          "overall_data",
                                          "overall_weight",
                                          "replicatefunction"),
                                 envir = environment())
-        thresholds <- apply(parallel::parSapply(cl,seq_len(nb_replicates),
-                                                replicatefunction),
-                            1,
-                            quantile,
-                            probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
       }
+      thresholds <- apply(pbsapply(seq_len(nb_replicates),
+                                   replicatefunction,
+                                   cl = cl),
+                          1,
+                          quantile,
+                          probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
+
     } else if (method == "perm") {
       replicatefunction <- function(r){
         iperm <- sample.int(length(mychoc$list_data), replace = TRUE)
@@ -143,24 +144,19 @@ estimate_confidence <-
         perm_tau <- apply(perm_dens, 1, function(x){
           return(coalesce(cor.fk(x, years), 0))
         })
-        setTxtProgressBar(pb,r)
         perm_tau
       }
-      if (! parallel) {
-        thresholds <- apply(sapply(seq_len(nb_replicates), replicatefunction),
-                            1,
-                            quantile,
-                            probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
-      } else {
+      if (parallel) {
         parallel::clusterExport(cl, list("mychoc",
                                          "replicatefunction"),
                                 envir = environment())
-        thresholds <- apply(parallel::parSapply(cl,seq_len(nb_replicates),
-                                                replicatefunction),
-                            1,
-                            quantile,
-                            probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
       }
+      thresholds <- apply(pbsapply(seq_len(nb_replicates),
+                                   replicatefunction,
+                                   cl = cl),
+                          1,
+                          quantile,
+                          probs = c((1 - conf) / 2, 1 - (1 - conf) / 2))
     } else{
       stop("wrong method")
     }

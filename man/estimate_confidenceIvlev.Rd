@@ -9,7 +9,8 @@ estimate_confidenceIvlev(
   mychocIvlev,
   conf = 0.95,
   nb_replicates = 500,
-  ncores = 1
+  ncores = 1,
+  progressbar = TRUE
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ estimate_confidenceIvlev(
 \item{nb_replicates}{number of replicates used to assess confidence intervals}
 
 \item{ncores}{Number of cores used. The parallelization will take place only if OpenMP is supported (default 1)}
+
+\item{progressbar}{(default TRUE) show progressbar (might be a bit slower)}
 }
 \value{
 an updated version of mychoc with two columns added to mychoc$grid which corresponds to the bounds of the confidence interval

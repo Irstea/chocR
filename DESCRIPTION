@@ -16,10 +16,10 @@ Imports:
     stats,
     grDevices,
     pcaPP,
-    utils,
     pracma,
     ks,
-    dplyr
+    dplyr,
+    pbapply
 Suggests: 
     knitr,
     rmarkdown,
